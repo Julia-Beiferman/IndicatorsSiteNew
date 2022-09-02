@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('./partials/head.ejs') %>
+</head>
+
+<header>
+  <%- include('./partials/nav.ejs') %>
+</header>
+
+
+<h1 style="color: white; text-align: center "><%= version %> Summary - Most Recent Run By Tester</h1>
+
+<body style="background-color:rgb(27, 27, 27);">
+  <div class="container">
+    <div class="card-group">
+      
+      <% for(var i = 0; i< data.length; i++) { %>
+        <% var dat = data[i] %>
+      <div class="col">
+        <div class="card text-bg-light mb-3" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title"><%= dat.name %></h5>
+            <p class="card-text">
+              <li>TOS: <%= dat.tos.version %> <%= dat.tos.build %> </li>
+              <li>WW: <%= dat.ww %> </li>
+              
+            </p>
+
+          </div>
+          <ul class="list-group list-group-flush list-group-danger">
+            <table class="table table-danger table">
+                      
+              <% Object.keys(dat.summary).forEach(key=>{ %>
+                <% if(dat.summary) { %>
+                  <% if(dat.summary[key][0] !== null) { %>
+                  <% if(dat.summary[key][0] == dat.summary[key][1]) { %>
+                  <% var successT = "table-success table-sm" %>
+                  <% } %>
+                  <tr class=<%= successT %>>
+                  <td><%= key %></td>
+                  <td><%= dat.summary[key][0] %>/<%= dat.summary[key][1] %></td>
+                  </tr>
+                  <% } %>
+                <% } %>
+              <% }); %>
+
+          </table>
+          </ul>
+
+        </div>
+      </div>
+
+      <% } %>
+    </div>
+  </div>
+</body>
+
+<footer>
+  <%- include('./partials/footer.ejs') %>
+</footer>
+
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('./partials/head.ejs') %>
+</head>
+
+<header>
+  <%- include('./partials/nav.ejs') %>
+</header>
+
+<script>
+  function toggleCheck(col_name){
+      var checkbox_val=document.getElementById(col_name).value;
+      if(checkbox_val=="hide")
+      {
+          var all_col=document.getElementsByClassName(col_name);
+          for(var i=0;i<all_col.length;i++) {
+              all_col[i].style.display="none";
+          }
+          document.getElementById(col_name+"_head").style.display="none";
+          document.getElementById(col_name).value="show";
+      } else {
+          var all_col=document.getElementsByClassName(col_name);
+          for(var i=0;i<all_col.length;i++)
+          {   
+          all_col[i].style.display="table-cell";
+          }
+          document.getElementById(col_name+"_head").style.display="table-cell";
+          document.getElementById(col_name).value="hide";
+      }
+
+  }
+</script>
+<div class="container-fluid">
+  <div class="row flex-nowrap">
+      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark sticky-top"> 
+          <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+             
+              
+              <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                  <li><h4 href="#">Info:</h4></li>
+                  <li> Tester: <%= dat.name %></li>
+                  <li>TOS Version: <%= dat.tos.version + " " + dat.tos.build %></li>
+                  <li>SRC Suite: <%= dat.suite %></li>
+                  <li>WW: <%= dat.ww %></li>
+                  <li> Datagrove: 
+                    <a href=<%= dat.datagrove %>>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder-fill" viewBox="0 0 16 16">
+                        <path d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3zm-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139z"/>
+                      </svg>
+                      </a>
+                  </li>
+                  
+
+                  <h4 style="text-align: center">Filters</h4>
+                  <li><h5 href="#"></h5></li>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="hide" id="ado_col" onchange="toggleCheck(this.id);" checked>
+                    <label class="form-check-label" for="flexCheckChecked" style="color:white">
+                      ADO
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="hide" id="comment_col" onchange="toggleCheck(this.id);" checked>
+                    <label class="form-check-label" for="flexCheckChecked" style="color:white">
+                      Comments
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="hide" id="fails_col" onchange="toggleCheck(this.id);" checked>
+                    <label class="form-check-label" for="flexCheckChecked" style="color:white">
+                      Fails
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="hide" id="mod_col" onchange="toggleCheck(this.id);" checked>
+                    <label class="form-check-label" for="flexCheckChecked" style="color:white">
+                      Module
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="hide" id="allinst_col" onchange="toggleCheck(this.id);" checked>
+                    <label class="form-check-label" for="flexCheckChecked" style="color:white">
+                      All Instances
+                    </label>
+                  </div>
+              </ul>
+          </div>
+      </div>
+      <div class="col py-3">  
+        <h1>SRC Fail Report for <%= dat.name %> RunID: WW<%= dat.ww %></h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/runs">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page"><%= dat.name %></li>
+              <li class="breadcrumb-item active" aria-current="page">FailReport</li>
+            </ol>
+          </nav>
+          <table id="srctable" class="table table-dark table-striped table-hover">
+              <thead>
+                <tr>
+                  <th><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
+                    <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001z"/>
+                  </svg></th>
+                  <th id="ado_col_head" scope="col">ADO</th>
+                  <th id="mod_col_head" scope="col">Module</th>
+                  <th id="fails_col_head" scope="col">Fails</th>
+
+                  <th id="allinst_col_head" scope="col">All Instances</th>
+                  <th id="comment_col_head" scope="col">Comments</th>
+  
+                </tr>
+              </thead>
+              <tbody>
+
+                <% Object.keys(dat.summary).forEach(key=>{ %> 
+                  <% if(dat.summary[key] !== null) { %>
+                    <% if(dat.summary[key][0] !== "") { %>
+                      <% if(dat.summary[key][1]) { %>
+            
+                <tr>
+                  <td></td>
+                  <td class="ado_col"></td>
+                  
+                    <td class="mod_col"><%= key %></td>
+                    <td class="fail_col">
+                      <table class="table table-danger table-sm">
+                        <% if(dat.summary[key][0] == dat.summary[key][1]){ %>
+                        <% var successT = "table-success table-sm" %>
+                        <% } %>
+                        <tr class=<%= successT %>
+                        <td><%= (dat.summary[key][0]-dat.summary[key][1])*-1 %>/<%= dat.summary[key][1] %></td>
+                        </tr>
+                    </table>
+
+                    <% var collapseID = key + "collapse" %>
+                    </td>
+                    <td class="allinst_col">
+                      <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#<%= collapseID %>" aria-expanded="false" aria-controls="collapseExample">^</button>
+                    </td>
+                 
+                  <td class="comment_col">
+                    <form class="d-flex">
+                        <input class="form-control me-2" aria-label="Search" value ="">
+                    </form>
+                  </td>
+                </tr>
+
+                <% if(module !== null) { %>
+                  <% for(var i = 0; i< module.length; i++){ %>
+                    <% if(module[i].module_name == key){ %>
+                <tr class="collapse" id=<%= collapseID %>>
+       
+                  
+                  <td colspan = 6>
+                    <table class="table table-info table-striped">
+
+                      <thead>
+                        <tr>
+                          <td></td>
+                          <td>SubModule</td>
+                          <td>Time passed</td>
+                          <td>Errors</td>
+                        </tr>
+  
+                      </thead>
+       
+                  <% for(var j = 0; j < module[i].module_data.length; j++){ %>
+                    <% if(module[i].module_data[j] !== null && module[i].module_data[j] !== undefined) { %>
+                      
+                      
+                    <tbody>
+                      <tr>
+                        <td></td>
+                        <td><%= module[i].module_data[j].module_execution %></td>
+                        <td><%= module[i].module_data[j].data.runtime %></td>
+                        <% if(module[i].module_data[j].data.errors !== null && module[i].module_data[j].data.errors.length > 1) { %>
+                          <td>
+                          <table class="table table-light table-striped">
+                            <thead>
+                              <tr>
+                                <% for(var k = 0; k < module[i].module_data[j].data.errors[0].length; k++) { %>
+                                  <% if(module[i].module_data[j].data.errors[0][k] !== "nan") { %>
+                                  <td><%= module[i].module_data[j].data.errors[0][k] %></td>
+                                  <% } %>
+                                <% } %>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% for(var k = 1; k < module[i].module_data[j].data.errors.length; k++) { %>
+                                <tr>
+                                <% for(var h=0; h < module[i].module_data[j].data.errors[k].length; h++){ %>
+                                  <% if(module[i].module_data[j].data.errors[k][h] !== "nan") { %>
+                                  <td><%= module[i].module_data[j].data.errors[k][h] %></td>
+                                  <% } %>
+                                <% } %>
+                                </tr>
+                              <% } %>
+                            </tbody>
+                          </table>
+                          </td>
+                        <% } else { %> 
+                        <td><%= module[i].module_data[j].data.errors %></td>
+                        <% } %>
+                      </tr>
+
+                    </tbody>
+                    <% } %>
+                  <% } %>
+                  </table>
+                  </td>    
+
+                </tr> 
+                    <% } %>
+                  <% } %>
+                <% } %>
+
+
+                <% } %>
+                <% } %>
+                <% } %>
+                <% }); %>
+                
+              </tbody>
+          </table>
+      </div>
+  </div>
+</div>
+<footer>
+  <%- include('./partials/footer.ejs') %>
+</footer>

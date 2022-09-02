@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('./partials/head.ejs') %>
+</head>
+
+<header>
+  <%- include('./partials/nav.ejs') %>
+</header>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js"></script>
+
+<script>
+  
+
+  var selectedModules = [];
+  function toggleCheck(col_name){ //show + hide columns in the table with checkbox
+    var checkbox_val=document.getElementById(col_name).value;
+  
+    if(checkbox_val=="hide")
+    {        
+        var datasets = myChart.data.datasets;
+
+        for(var i = 0; i < datasets.length; i++){
+          if(datasets[i].label == col_name.replace("_col", "").replace("_", " ")){
+            datasets.splice(i, 1); //remove element from the lsit
+          }
+        }
+
+        myChart.update()
+
+        document.getElementById(col_name).value="show";
+    } else {
+
+      var module = col_name.replace("_col", "").replace("_", " ");
+        
+        myChart.data.datasets.push(
+          {
+            type: 'line',
+            label: module,
+            data: [
+              <% data.forEach(dat => { %>
+                <% if(dat.summary.module) { %>
+                <% dat.summary.module[0]/dat.summary.module[1] %>,
+                <% } %>
+              <% }); %>
+            ], //fail rates go here
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+          });
+        myChart.update()
+
+        document.getElementById(col_name).value="hide";
+    }
+
+
+  }
+</script>
+
+
+<div class="container-fluid">
+    <div class="row flex-nowrap">
+        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark sticky-top 100">
+          <main class="d-flex flex-nowrap">
+            <div id="mySideBar" class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white">
+              <div class="input-group mb-3">
+                <h3>Tester:  </h3>
+                <form action = "/analytics" method="GET">
+                  <select class="form-select" id="testerSel" value="testerSel" method="GET">
+                    <option selected>CH4HDMTISV01</option>
+                    <% var testers = ['CH4HDMTISV02', 'CH4HDMTISV03', 'CH4HDMTISV04', 'CH4HDMTISV05', 'CH4HDMTISV06', 'CH4HDMTISV07', 'CH4HDMTISV08', 'CH4HDMTISV09', 'CH4HDMTISV10', 'CH4HDMTISV11','CH4HBI10004', 'CH4HBI10007', 'CH4HBI10017', 'CH4HBI10027', 'CH4HBI10107', 'CH4HDMT06', 'CH4HDMT02261', 'CH4HDMTISV30113'] %>
+                    <% testers.forEach(dev => { %>
+                    <% var tester_url = "/analytics/" + dev %>      
+                    <option href=<%= tester_url %> optionLink=<%= tester_url %> tes_name=<%= dev %>><%= dev %></option>
+                    <% }); %>
+                  </select>
+                </form>  
+              </div>
+              
+              <h3>X Axis:</h3>
+               
+                  <label class="form-check-label" for="flexCheckChecked" style="color:white">
+                    Work Week
+                  </label>
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                  <div class="input-group mb-3">
+                    <input type="text" name="min" id="min" class="form-control" placeholder="From" aria-label="ww_start">
+                    <span class="input-group-text">to</span>
+                    <input type="text" name="max" id="max" class="form-control" placeholder="End" aria-label="ww_end">
+                  </div>
+                </ul>
+                <h3>Y Axis:</h3>
+                Modules
+                <% var summarys = ['Calibration', 'Diagnostics', 'Channel Card', 'DPS', "SysVal", 'Hal Init'] %>
+                <% summarys.forEach( iter => { %>
+                <div class="form-check">
+                
+                  <% var itr_id = iter.replace(" ", "_") + "_col" %> 
+                  <input class="form-check-input" type="checkbox"value="show" id=<%= itr_id %> onchange="toggleCheck(this.id);" >
+                  <label class="form-check-label" for="flexCheckChecked" style="color:white">
+                    <%= iter %>
+                  </label>
+                  
+                </div>
+                <% }); %>
+                
+            </div>
+          </main>
+        </div>
+        <div id ="main" class="col py-10">
+          <canvas id="myChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<footer>
+  <%- include('./partials/footer.ejs') %>
+</footer>
+
+</html>
+
+<script type="text/javascript" language="javascript">
+
+var testerName = "CH4"
+
+const ctx = document.getElementById('myChart').getContext('2d');
+const myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {//each item in list is a module
+        labels: [ 1, 2, 3, 4, 5, 6, 7
+
+        ], //all of the ww's go here
+        datasets: []
+    },
+    options: {
+      plugins: {
+          title: {
+            display: true,
+            text: '<%= testerName %>',
+            fullSize: true
+          }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+
+$(function() {
+  $("#testerSel").change(function(){
+
+    window.location.href= $('option:selected', this).attr('optionLink');
+    testerName= $('option:selected', this).attr('tes_name');
+    myChart.options.plugins.title.text = testerName;
+    myChart.update();
+  });
+});
+
+</script>
+

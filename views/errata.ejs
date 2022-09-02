@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('./partials/head.ejs') %>
+</head>
+
+<header>
+  <%- include('./partials/nav.ejs') %>
+</header>
+
+<h1 style="text-align: center">TOS Relase Errata</h1>
+
+
+
+
+<div class = "container">
+  <div class="input-group mb-3">
+    <label class="input-group-text" for="numRows">TOS Version</label>
+    <form action = "#" method="post">
+      <select class="form-select" id="numRows" value="numRows">
+        <% for(var i = 0; i < tosDist.length; i++) { %>
+        <option value=<%= tosDist[i] %>><%= tosDist[i] %></option>
+        <% } %>
+      </select>
+    </form>
+</div>
+  <table id="myTable" class="table table-light table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col">TOS</th>
+        <th scope="col">Category</th>
+        <th scope="col">TFS Number</th>
+        <th scope="col">Title</th>
+        <th scope="col">Classification</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% tickets.forEach(ticket=>{ %>
+      <tr>
+        <td><%= ticket.fields['TOS.Found_In_Release'] %></td>
+        <td></td>
+        <td><%= ticket.id %></td>
+        <td><%= ticket.fields['System.Title'] %></td>
+        <td><%= ticket.fields['TOS.Type'] %></td>
+
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+
+</div>
+
+
+
+<script>
+  $(document).ready( function () {
+  $('#myTable').DataTable();
+  } );
+</script>
+
+<footer>
+  <%- include('./partials/footer.ejs') %>
+</footer>
+
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('./partials/head.ejs') %>
+</head>
+
+<header>
+  <%- include('./partials/nav.ejs') %>
+</header>
+
+<script>
+    function toggleCheck(col_name){ //show + hide columns in the table with checkbox
+        var checkbox_val=document.getElementById(col_name).value;
+        if(checkbox_val=="hide")
+        {
+            var all_col=document.getElementsByClassName(col_name);
+            for(var i=0;i<all_col.length;i++) {
+                all_col[i].style.display="none";
+            }
+            document.getElementById(col_name+"_head").style.display="none";
+            document.getElementById(col_name).value="show";
+        } else {
+            var all_col=document.getElementsByClassName(col_name);
+            for(var i=0;i<all_col.length;i++)
+            {   
+            all_col[i].style.display="table-cell";
+            }
+            document.getElementById(col_name+"_head").style.display="table-cell";
+            document.getElementById(col_name).value="hide";
+        }
+
+
+    function check(checked = true){ //check all of the checkboxes if 'All is selected'
+      const checkboxes = document.querySelectorAll('input[name="nameCheckBox"]');
+      checkboxes.forEach((checkbox) => {
+              checkbox.checked = checked;
+          });
+
+    }
+
+    function checkAll() {
+        select();
+        this.onclick = uncheckAll;
+    }
+
+    function uncheckAll() {
+        select(false);
+        this.onclick = checkAll;
+    }
+  
+    }
+  </script>
+
+<div class="container-fluid">
+    <div class="row flex-nowrap">   
+      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark sticky-top"> 
+        <%- include('./sidebar.ejs') %>
+      </div>
+
+      <div id ="main" class="col py-3">
+            <div class="row">
+              <h1 style="text-align: center">SRC Indicators Site</h1>
+            </div>
+
+            <table id="dataTable" class="table table-dark table-striped table-hover">
+              <thead>
+                <tr class="filters">
+                    <tr>
+                    <th id="edit_col_head" style="display:none;" scope="col"></th>
+                    <th id="name_col_head" scope="col">Tester</th>
+                    <th id="ww_col_head" scope="col">WW</th>
+                    <th id="tos_col_head" scope="col">TOS Version</th>
+                    <th id="src_col_head" scope="col">SRC Suite</th>
+                    <th id="itr_col_head" scope="col">Summary</th>
+                    <th id="dg_col_head" scope="col">Datagrove</th>
+                    <th id="failRe_col_head" scope="col">Fail Report</th>
+                    <th id="comment_col_head" scope="col">Comments</th>
+                    <th id="ado_col_head" style="display:none;" scope="col">ADO</th>
+                    </tr>
+                </tr>
+              </thead>
+            <tbody>
+              <% data.forEach(dat =>{ %>
+                <tr id=<%= dat._id %>>
+                  
+                    <td style="display:none;" id="edit_cell" class="edit_col">
+                      <button type="button" id="editRow" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editRowModal" 
+                      data-bs-whatever=<%= dat._id %> 
+                      name=<%= dat.name %>
+                      ww=<%= dat.ww %>
+                      tos=<%= dat.tos.version + " " + dat.tos.build %>
+                      suite=<%= dat.suite %>
+                      summary=<%= JSON.stringify(dat.summary)  %>
+                      comment= "<%= dat.comments %>" %>>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                      </svg>
+                      </button>
+                    </td>
+                    <td id="name_cell" value=<%= dat.name %> class="name_col"><%= dat.name %></td>
+                    <td id="ww_cell" class="ww_col"><%= dat.ww %></td>
+                    <td id="tos_cell" class="tos_col"><%= dat.tos.version + "." + dat.tos.major + "." + dat.tos.minor + "." + dat.tos.patch + " Build " + dat.tos.build %></td>
+                    <td id="suite_cell" class="src_col"><%= dat.suite %></td>
+
+                    <td class="itr_col">
+                      
+                      
+                      <table class="table table-danger table-sm">
+                        <% Object.keys(dat.summary).forEach(key=>{ %> 
+                          <% if(dat.summary[key] !== null) { %>
+                            <% if(dat.summary[key][0] !== "") { %>
+                              <% if(dat.summary[key][1]) { %>
+                                <% if(dat.summary[key][0] == dat.summary[key][1]){ %>
+                                  <% var successT = "table-success table-sm" %>
+                                <% } %>
+                            
+                              <tr class=<%= successT %>>
+                              <td><%= key %></td>
+                              <td><%= (dat.summary[key][0]-dat.summary[key][1])*-1 %>/<%= dat.summary[key][1] %></td>
+                              </tr>
+                            <% } %>
+                            <% } %>
+                          <% } %>
+                        <% }); %>
+                      </table>
+
+                    </td>
+                    <td class="dg_col">
+                        <a href=<%= "file://" + dat.datagrove %>>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder-fill" viewBox="0 0 16 16">
+                        <path d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3zm-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139z"/>
+                      </svg>
+                    </td>
+
+                    <% var url_val = "/failreport/"+ dat._id %>
+                    <td class="failRe_col">
+                    <a href= <%= url_val.replace(" ", "%20") %>>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-bar-graph-fill" viewBox="0 0 16 16">
+                        <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm.5 10v-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-2.5.5a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-1zm-3 0a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-1z"/>
+                        </svg>
+                    </td>
+                    
+                    
+                    
+                    <td class="comment_col">
+                      <div class="input-group mb-3">
+                        <div class="form-floating">
+                          <textarea class="form-control" readonly><%= dat.comments %></textarea>
+                        </div>
+                      <button type="button" id="editRow" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#commentModal" 
+                      data-bs-whatever=<%= dat._id %> 
+                      comment= "<%= dat.comments %>"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
+                          <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001z"/>
+                        </svg>
+                      </button>
+                    </td>
+
+                    <td style="display:none;" class="ado_col">
+                      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adoModal" data-bs-whatever="@mdo">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                        </svg>
+                      </button>
+                    </td>
+                    
+                  
+                </tr>
+
+                <% }); %>
+
+                </tbody>
+            </table>
+  
+      </div>
+    </div>
+</div>
+
+<%- include('./modals.ejs') %>
+
+<footer>
+  <%- include('./partials/footer.ejs') %>
+</footer>
+
+<script>
+  fetch('./example.json')
+    .then((response) => response.json())
+    .then((json) => console.log(json));
+</script>
+
+<script>
+  var request = new XMLHttpRequest()
+
+  request.open('GET', 'https://dev.azure.com/ATTD/HDMT_Prod/_apis/wit/workitems/187976?api-version=6.0', true)
+  request.setRequestHeader('Content-Type', 'application/json; charset=utf-8;');
+  request.setRequestHeader ("Authorization", "Basic " + btoa('Basic' + ":" + 'vl6itwdrmbiotwrjcttijtmnc7yskjr4q6q2pmtyzj3h7mo25xpq'));
+
+  request.onload = function() {
+    // Begin accessing JSON data here
+
+    //var data = JSON.parse(this.response)
+
+    if (request.status >= 200 && request.status < 400) {
+      //console.log(data.fields)
+    } else {
+      //console.log('error')
+    }
+  }
+
+  request.send()
+</script>
+
+
+  <script type="text/javascript">
+    const exampleModal = document.getElementById('editRowModal')
+    exampleModal.addEventListener('show.bs.modal', event => {
+      // Button that triggered the modal
+      const button = event.relatedTarget
+      // Extract info from data-bs-* attributes
+      const recipient = button.getAttribute('data-bs-whatever')
+
+      //fill in data
+      const params = ['name', 'ww', 'tos', 'suite', 'comment', 'ado'];
+
+      for(var i = 0; i < params.length; i++){
+        querySel = "#" + params[i] + "form";
+
+        exampleModal.querySelector(querySel).value = button.getAttribute(params[i]);
+      }
+
+      console.log('ID')
+      console.log(recipient)
+      console.log('comments')
+      console.log(button.getAttribute('comment'))
+
+      summarys = button.getAttribute('summary');
+      
+
+      iterDict = JSON.parse(summarys);
+      for(const [key, value] of Object.entries(iterDict)){
+        if(value.length > 0){
+          var iter_id = "#" + key.substring(0,3) + "_form";
+          var iter_id_two = "#" + key.substring(0,3) + "_form2";
+          exampleModal.querySelector(iter_id).value = value[0];
+          exampleModal.querySelector(iter_id_two).value = value[1];
+        }
+      }
+
+      exampleModal.querySelector("#custId").value = recipient; //hidden input to return row id
+      const modalTitle = exampleModal.querySelector('.modal-title')
+      modalTitle.textContent = `Edit Test Run id: ${recipient}`
+      //nameInput.value = name
+    })
+
+    const addcommentModal = document.getElementById('commentModal')
+    addcommentModal.addEventListener('show.bs.modal', event => {
+      // Button that triggered the modal
+      const button = event.relatedTarget
+      // Extract info from data-bs-* attributes
+      const id = button.getAttribute('data-bs-whatever')
+
+      const comments = button.getAttribute('comment');
+      console.log( button.getAttribute('comment'))
+      
+
+      addcommentModal.querySelector("#custId").value = id; //hidden input to return row id
+      addcommentModal.querySelector('#commentform').value = comments //add existing comments to page into the textarea 
+      const modalTitle = addcommentModal.querySelector('.modal-title')
+      modalTitle.textContent = `Add comment Run id: ${id}`
+    })
+
+  </script>
+
+  <script>
+    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) { //work week search in range
+    var min = parseFloat($('#min').val(), 10);
+    var max = parseFloat($('#max').val(), 10);
+    var age = parseFloat(data[2]) || 0; // use data for the ww column
+ 
+    if (
+        (isNaN(min) && isNaN(max)) ||
+        (isNaN(min) && age <= max) ||
+        (min <= age && isNaN(max)) ||
+        (min <= age && age <= max)
+    ) {
+        return true;
+    }
+    return false;
+    });
+
+    
+
+    $(document).ready(function () {
+      var table = $('#dataTable').DataTable({
+
+      });
+
+      $('#dataTable').on('click', 'tbody td', function() {
+
+        //get textContent of the TD
+        console.log('TD cell textContent : ', this.textContent)
+        })
+
+      $.fn.dataTable.ext.search.push(
+      function( settings, searchData, index, rowData, counter ) {
+    
+        var offices = $('input:checkbox[name="nameCheckBox"]:checked').map(function() {
+          return this.value;
+        }).get();
+      
+
+        if (offices.length === 0) {
+          return true;
+        }
+          
+        if (offices.indexOf(searchData[1]) !== -1) {
+          return true;
+        }
+          return false;
+        }
+      );
+
+    
+      $.fn.dataTable.ext.search.push(
+      function( settings, searchData, index, rowData, counter ) {
+    
+        var itrChecks = $('input:checkbox[name="iterCheckBox"]:checked').map(function() {
+          console.log(this.value)
+          return this.value;
+        }).get();
+      
+
+        if (itrChecks.length === 0) {
+          return true;
+        }
+
+        if(searchData[5].includes(itrChecks[0])){
+          
+          return true;
+        }
+          
+        if (itrChecks.indexOf(searchData[5]) !== -1) { //column with iterations in it
+          return true;
+        }
+          return false;
+        }
+      );
+      
+        
+      $.fn.dataTable.ext.search.push(
+      function( settings, searchData, index, rowData, counter ) {
+    
+        var suites = $('input:checkbox[name="suiteCheckBox"]:checked').map(function() {
+          return this.value;
+        }).get();
+
+        var tos = $('input:checkbox[name="tosCheckBox"]:checked').map(function() {
+          return this.value;
+        }).get();
+      
+
+        if (suites.length === 0) {
+          return true;
+        }
+          
+        if (suites.indexOf(searchData[4]) !== -1 || searchData[3].includes(tos[0])) {
+          return true;
+        }
+          return false;
+        }
+      );
+
+
+      $('#min, #max').keyup(function () {
+        table.draw();
+      });
+      $('input:checkbox').on('change', function () {
+        table.draw();
+      });
+    });
+
+    
+  </script>
+

@@ -1,0 +1,240 @@
+<style>
+
+.dropdown-toggle { outline: 0; }
+
+.btn-toggle {
+  padding: .25rem .5rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, .65);
+  background-color: transparent;
+}
+.btn-toggle:hover,
+.btn-toggle:focus {
+  color: rgba(0, 0, 0, .85);
+  background-color: #d2f4ea;
+}
+
+.btn-toggle::before {
+  width: 1.25em;
+  line-height: 0;
+  content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,280,280,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+  transition: transform .35s ease;
+  transform-origin: .5em 50%;
+}
+
+.btn-toggle[aria-expanded="true"] {
+  color: rgba(0, 0, 0, .85);
+}
+.btn-toggle[aria-expanded="true"]::before {
+  transform: rotate(90deg);
+}
+
+.btn-toggle-nav a {
+  padding: .1875rem .5rem;
+  margin-top: .125rem;
+  margin-left: 1.25rem;
+}
+.btn-toggle-nav a:hover,
+.btn-toggle-nav a:focus {
+  background-color: #d2f4ea;
+}
+
+.scrollarea {
+  overflow-y: auto;
+}
+
+</style>
+
+  <body>
+    
+
+<main class="d-flex flex-nowrap">
+  <div id="mySideBar" class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white">
+    
+    <h4 style="text-align: center">Filters</h4>
+    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+        <li><h5 href="#">Indicators</h5></li>
+
+        <script> 
+          
+          function filterCol(col_name, value){
+            
+            var all_col=document.getElementsByClassName(col_name);
+            
+            for(var i=0;i<all_col.length;i++)
+            {            
+              if(all_col[i].getAttribute('name') === value){
+                var all_row = all_col[i].getElementById(col_name).parentNode.nodeName; //get the parent id to keep all of the rows
+                continue;
+              }
+              all_col[i].parentNode.style.display = "none"; //get the parent id to keep all of the rows
+            }
+
+
+          };
+        </script>
+
+        <li class="mb-1">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox"value="hide" id="name_col" onchange="toggleCheck(this.id);" checked>
+            <button style="color:white" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#name-collapse" aria-expanded="true">
+
+              <span class="form-check-label" for="flexCheckChecked" style="color:white">
+                Tester
+              </span>
+            </button>
+            </div>
+          
+          
+          <div class="collapse" id="name-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <% var testers = ['CH4HDMTISV01', 'CH4HDMTISV02', 'CH4HDMTISV03', 'CH4HDMTISV04', 'CH4HDMTISV05', 'CH4HDMTISV06', 'CH4HDMTISV07', 'CH4HDMTISV08', 'CH4HDMTISV09', 'CH4HDMTISV10', 'CH4HDMTISV11','CH4HBI10004', 'CH4HBI10007', 'CH4HBI10017', 'CH4HBI10027', 'CH4HBI10107', 'CH4HDMT06', 'CH4HDMT02261', 'CH4HDMTISV30113'] %>
+              <% testers.forEach(tester =>{ %>
+              <div class="form-check">
+                <p class="tab">
+                  <% var itr_id = tester + "_col" %>
+                  <input class="form-check-input" type="checkbox" name="nameCheckBox" id="nameCheck" value=<%- tester %>>
+                  <label class="form-check-label" for="flexCheckChecked" id="nameCheckLabel" style="color:white" value= <%= tester %> >
+                    <%= tester %>
+                  </label>
+                </p>
+              </div>
+              <% }); %>
+            </ul>
+          </div>
+        </li>
+
+        <li class="mb-1">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox"value="hide" id="ww_col" onchange="toggleCheck(this.id);" checked>
+              <label class="form-check-label" for="flexCheckChecked" style="color:white">
+                Work Week
+              </label>
+            </div>
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <div class="input-group mb-3">
+                <input type="text" name="min" id="min" class="form-control" placeholder="From" aria-label="ww_start">
+                <span class="input-group-text">to</span>
+                <input type="text" name="max" id="max" class="form-control" placeholder="End" aria-label="ww_end">
+              </div>
+            </ul>
+        </li>
+
+        <li class="mb-1">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox"value="hide" id="tos_col" onchange="toggleCheck(this.id);" checked>
+            <button style="color:white" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#tos-collapse" aria-expanded="true">
+
+              <span class="form-check-label" for="flexCheckChecked" style="color:white">
+                TOS Version
+              </span>
+            </button>
+            </div>
+          <div class="collapse" id="tos-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <% for(var i = 0; i < tosDist.length; i++) { %>
+              <div class="form-check">
+                <p class="tab">
+                  <input class="form-check-input" type="checkbox" name="tosCheckBox" id="tosCheck" value=<%= tosDist[i] %>>
+                  <label class="form-check-label" for="flexCheckChecked" style="color:white" id="tosCheckLabel" value= <%= tosDist[i] %>>
+                    <%= tosDist[i] %>
+                  </label>
+                </p>
+              </div>
+              <% } %>
+            </ul>
+          </div>
+        </li>
+
+        <li class="mb-1">
+          <div class="form-check">
+              
+              <input class="form-check-input" type="checkbox"value="hide" id="src_col" onchange="toggleCheck(this.id);" checked>
+              <button style="color:white" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#src-collapse" aria-expanded="true">
+
+                <span class="form-check-label" for="flexCheckChecked" style="color:white">
+                  SRC Suite
+                </span>
+            </button>
+          </div>
+          
+          <div class="collapse" id="src-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <% for(var i = 0; i < suiteDist.length; i++) { %>
+              <div class="form-check">
+                <p class="tab">
+                  <input class="form-check-input" type="checkbox" name="suiteCheckBox"  id="suiteCheck" value=<%= suiteDist[i] %> >
+                  <label class="form-check-label" for="flexCheckChecked" style="color:white" id="suiteCheckLabel" value= <%= suiteDist[i] %> >
+                    <%= suiteDist[i] %>
+                  </label>
+                </p>
+              </div>
+              <% } %>
+            </ul>
+          </div>
+        </li>
+
+        <li class="mb-1">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox"value="hide" id="itr_col" onchange="toggleCheck(this.id);" checked>
+          
+            <button style="display:inline-block" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+                <span class="form-check-label" for="flexCheckChecked" style="color:white">
+                  Iterations
+                </span>
+            </button>
+          </div>
+          <div class="collapse" id="home-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <% var iterations = ['Calibration', 'Diagnostics', 'ChannelCard', 'DPS', "SysVal", 'HalInit'] %>
+              <% iterations.forEach(iter => { %>
+              <div class="form-check">
+                <p class="tab">
+                  <% var itr_id = iter.substring(0,3) + "_col" %>
+                  <input class="form-check-input" name = "iterCheckBox" type="checkbox" value="<%= iter %>"" id=<%= itr_id %> 
+                  <label class="form-check-label" for="flexCheckChecked" style="color:white">
+                    <%= iter %>
+                  </label>
+                </p>
+              </div>
+              <% }); %>
+            </ul>
+          </div>
+        </li>
+
+        <li class="mb-1">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox"value="hide" id="dg_col" onchange="toggleCheck(this.id);" checked>
+              <label class="form-check-label" for="flexCheckChecked" style="color:white">
+                Datagrove
+              </label>
+            </div>
+
+        </li>
+
+        <li><h5 href="#">Fail Report</h5></li>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="hide" id="comment_col" checked onchange="toggleCheck(this.id);">
+          <label class="form-check-label" for="flexCheckChecked" style="color:white">
+            Comments
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="show" id="ado_col" onchange="toggleCheck(this.id);" >
+          <label class="form-check-label" for="flexCheckChecked" style="color:white">
+            ADO
+          </label>
+        </div>
+        
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="show" id="edit_col" onchange="toggleCheck(this.id);">
+          <label class="form-check-label" for="flexCheckChecked" style="color:white">
+            Edit Table
+          </label>
+        </div>
+
+
+
+    </ul>
+  </div>

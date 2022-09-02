@@ -1,0 +1,165 @@
+<!-- Comment Modal -->
+
+<div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" name='id' id="exampleModalLabel">Add Comment </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/runs/addcomment" method="POST">
+          <input type="hidden" class="form-control" id="custId" name="id">
+          <div class="mb-3">
+            <label for="commentform" class="col-form-label">Comment:</label>
+            <textarea class="form-control" id="commentform" name="comment"></textarea>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary">Submit</button>
+      </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- EditRow Modal -->
+
+<div class="modal fade" id="editRowModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" name='id' id="exampleModalLabel">Edit Run id: </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/runs" method="POST">
+          <input type="hidden" class="form-control" id="custId" name="id">
+          <div class="mb-3">
+            <label for="nameform" class="col-form-label">Tester:</label>
+            <input type="text" class="form-control" id="nameform" name="name">
+          </div>
+          <div class="mb-3">
+            <label for="wwform" class="col-form-label">WW:</label>
+            <input type="text" class="form-control" id="wwform" name="ww">
+          </div>
+          <div class="mb-3">
+            <label for="tosform" class="col-form-label">TOS Version:</label>
+            <input type="text" class="form-control" id="tosform" name="tos">
+          </div>
+          <div class="mb-3">
+            <label for="suiteform" class="col-form-label">SRC Suite:</label>
+            <input type="text" class="form-control" id="suiteform" name="suite">
+          </div>
+          <div class="mb-3">
+            <label for="iterform" class="col-form-label">Iterations:</label>
+            <table class="table table-bordered table-info">
+              <thead>
+                <tr>
+                  <th colspan="2" scope="col">Module</th>
+                  <th scope="col">Pass / Fail</th>
+                </tr>
+              </thead>
+              <tbody>
+              <% var iterations = ['Calibration', 'Diagnostics', 'Channel Card', 'DPS', "SysVal", 'Hal Init'] %>
+              <% iterations.forEach(iter => { %>
+                <tr> 
+                <% var itr_id = iter.substring(0,3) + "_form" %>
+                <td colspan="2">
+                  <label class="col-form-label"><%= iter %></label>
+                </td>
+                <td>
+                  <div class="w-50 p-3">
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control" id=<%= itr_id %> name=<%= iter %>>
+                      <span class="input-group-text">/</span>
+                      <input type="text" class="form-control" id=<%= itr_id + "2" %> name=<%= iter %>>
+                    </div>
+                  </div>
+                </td>            
+              </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+          <div class="mb-3">
+            <label for="adoform" class="col-form-label">ADO #:</label>
+            <input type="text" class="form-control" id="adoform" name="ado">
+          </div>
+          <div class="mb-3">
+            <label for="commentform" class="col-form-label">Comment:</label>
+            <textarea class="form-control" id="commentform" name="comment"></textarea>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary">Submit</button>
+      </form>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-whatever=custID >Delete</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Are you sure you want to delete this run?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-footer">
+        <form action="/runs/deleteRun" method="POST">
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">Yes</button>
+        </form>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ADO Modal -->
+<div class="modal fade" id="adoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Related ADO Tickets</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table id="adosTable" class="table table-light table-striped table-hover">
+          <thead>
+            <tr>
+              <th scope="col">TOS</th>
+              <th scope="col">Category</th>
+              <th scope="col">TFS Number</th>
+              <th scope="col">Title</th>
+              <th scope="col">Classification</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td><button type="button" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+              </button></td>
+      
+            </tr>
+          </tbody>
+        </table>
+        <!-- <embed src="http://www.example.com" style="width:450px; height: 300px;">  see if we can add embedded webpage for ADO display-->
+      </div>
+    </div>
+  </div>
+</div>
