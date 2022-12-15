@@ -131,6 +131,57 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+
+        <form action="/runs/ado" method="POST">
+          <input type="hidden" class="form-control" id="custId" name="id">
+          <div class="mb-3">
+            <label for="nameform" class="col-form-label">Tester:</label>
+            <input type="text" class="form-control" id="nameform" name="name">
+          </div>
+          <div class="mb-3">
+            <label for="dateform" class="col-form-label">Date:</label>
+            <input type="text" class="form-control" id="dateform" name="date">
+          </div>
+          <div class="mb-3">
+            <label for="tosform" class="col-form-label">TOS Version:</label>
+            <input type="text" class="form-control" id="tosform" name="tos">
+          </div>
+          <div class="mb-3">
+            <label for="suiteform" class="col-form-label">SRC Suite:</label>
+            <input type="text" class="form-control" id="suiteform" name="suite">
+          </div>
+          <div class="mb-3">
+            <label for="iterform" class="col-form-label">Iterations:</label>
+            <table class="table table-bordered table-info">
+              <thead>
+                <tr>
+                  <th colspan="2" scope="col">Module</th>
+                  <th scope="col">Pass / Fail</th>
+                </tr>
+              </thead>
+              <tbody>
+              <% var iterations = ['Calibration', 'Diagnostics', 'Channel Card', 'DPS', "SysVal", 'Hal Init'] %>
+              <% iterations.forEach(iter => { %>
+                <tr> 
+                <% var itr_id = iter.substring(0,3) + "_form" %>
+                <td colspan="2">
+                  <label class="col-form-label"><%= iter %></label>
+                </td>
+                <td>
+                  <div class="w-50 p-3">
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control" id=<%= itr_id %> name=<%= iter %>>
+                      <span class="input-group-text">/</span>
+                      <input type="text" class="form-control" id=<%= itr_id + "2" %> name=<%= iter %>>
+                    </div>
+                  </div>
+                </td>            
+              </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+
         <table id="adosTable" class="table table-light table-striped table-hover">
           <thead>
             <tr>
@@ -158,8 +209,129 @@
             </tr>
           </tbody>
         </table>
-        <!-- <embed src="http://www.example.com" style="width:450px; height: 300px;">  see if we can add embedded webpage for ADO display-->
+
+        <form>
+          <label for="ticketform" class="col-form-label">Or add by ticket #:</label>
+          <input type="text" class="form-control" id="ticketform" name="ticket">
+        </form>
+        <div class="modal-footer">
+          <button class="btn btn-primary">Submit</button>
+        </form>
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-whatever=custID >Delete</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<script type="module" src="../main.js">
+
+  import fetch from 'node-fetch';
+  import HttpsProxyAgent from 'https-proxy-agent';
+
+  const exampleModal = document.getElementById('editRowModal')
+  exampleModal.addEventListener('show.bs.modal', event => {
+    // Button that triggered the modal
+    const button = event.relatedTarget
+    // Extract info from data-bs-* attributes
+    const recipient = button.getAttribute('data-bs-whatever')
+
+    //fill in data
+    const params = ['name', 'ww', 'tos', 'suite', 'comment', 'ado'];
+
+    for(var i = 0; i < params.length; i++){
+      querySel = "#" + params[i] + "form";
+
+      exampleModal.querySelector(querySel).value = button.getAttribute(params[i]);
+    }
+
+    console.log('ID')
+    console.log(recipient)
+    console.log('comments')
+    console.log(button.getAttribute('comment'))
+
+    summarys = button.getAttribute('summary');
+    
+
+    iterDict = JSON.parse(summarys);
+    for(const [key, value] of Object.entries(iterDict)){
+      if(value.length > 0){
+        var iter_id = "#" + key.substring(0,3) + "_form";
+        var iter_id_two = "#" + key.substring(0,3) + "_form2";
+        exampleModal.querySelector(iter_id).value = value[0];
+        exampleModal.querySelector(iter_id_two).value = value[1];
+      }
+    }
+
+    exampleModal.querySelector("#custId").value = recipient; //hidden input to return row id
+    const modalTitle = exampleModal.querySelector('.modal-title')
+    modalTitle.textContent = `Edit Test Run id: ${recipient}`
+    //nameInput.value = name
+  })
+
+  
+  
+
+  const adoModal = document.getElementById('adoModal')
+  adoModal.addEventListener('show.bs.modal', event => {
+    // Button that triggered the modal
+    const button = event.relatedTarget
+    // Extract info from data-bs-* attributes
+    const recipient = button.getAttribute('data-bs-whatever')
+
+    //fill in data
+    const params = ['name', 'date', 'tos', 'suite'];
+
+    for(var i = 0; i < params.length; i++){
+      querySel = "#" + params[i] + "form";
+
+      adoModal.querySelector(querySel).value = button.getAttribute(params[i]);
+    }
+
+  
+    summarys = button.getAttribute('summary');
+    
+
+    var failedModules = []
+    iterDict = JSON.parse(summarys);
+    for(const [key, value] of Object.entries(iterDict)){
+      if(value.length > 0){
+        var iter_id = "#" + key.substring(0,3) + "_form";
+        var iter_id_two = "#" + key.substring(0,3) + "_form2";
+        adoModal.querySelector(iter_id).value = value[0];
+        adoModal.querySelector(iter_id_two).value = value[1];
+        if(value[0] < value[1]){ //detect if there is a fail
+          failedModules.push(key);
+        }
+      }
+    }
+
+    
+
+    
+
+    adoModal.querySelector("#custId").value = recipient; //hidden input to return row id
+    const modalTitle = adoModal.querySelector('.modal-title')
+    modalTitle.textContent = `Edit Test Run id: ${recipient}`
+    //nameInput.value = name
+  })
+
+  const addcommentModal = document.getElementById('commentModal')
+  addcommentModal.addEventListener('show.bs.modal', event => {
+    // Button that triggered the modal
+    const button = event.relatedTarget
+    // Extract info from data-bs-* attributes
+    const id = button.getAttribute('data-bs-whatever')
+
+    const comments = button.getAttribute('comment');
+    // console.log( button.getAttribute('comment'))
+    
+
+    addcommentModal.querySelector("#custId").value = id; //hidden input to return row id
+    addcommentModal.querySelector('#commentform').value = comments //add existing comments to page into the textarea 
+    const modalTitle = addcommentModal.querySelector('.modal-title')
+    modalTitle.textContent = `Add comment Run id: ${id}`
+  })
+
+</script>

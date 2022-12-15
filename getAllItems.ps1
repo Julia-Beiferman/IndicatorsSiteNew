@@ -1,4 +1,4 @@
-$Token = "a2gzspz4e3p4h4a7mndzsq6zn7gcxsfsgaw2vavlnkbzxr3iqcqq"
+$Token = "5h6mmjsesx6wfalwiagfl6vesyptbp4a4gu6g7ng72oiau56c6va"
 $encoded_token = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$Token"))
 $ado_headers = @{Authorization="Basic $encoded_token"}
 
@@ -14,7 +14,7 @@ $query = @{
     Where 
     [System.WorkItemType] <> ''
     AND [System.Description] Contains '\\datagroveaz.amr.corp.intel.com\sttd\HDMT\TesterIntegration\HISV\SRCLoopingData\CH4HDMTISV02\2022_07_08_15_48_22_Run'
-    OR [System.Description] Contains 'CHGEN30011'"
+    AND [System.Description] Contains 'DPS'"
 }
 
 $queryJson = $query | ConvertTo-Json
@@ -31,9 +31,9 @@ $queryBatch =  @{
 }
 
 $queryBatchJson = $queryBatch | ConvertTo-Json
-#Write-Output $queryBatchJson
+Write-Output $queryBatchJson
 
 
 $qured = Invoke-RestMethod -Method 'Post' -Uri "$batchURL" -Headers $ado_headers -Body $queryBatchJson -ContentType "application/json"
-#Write-Output $qured.value | ConvertTo-Json
-#Write-Output $reg.workItems.id
+Write-Output $qured.value | ConvertTo-Json
+Write-Output $reg.workItems.id

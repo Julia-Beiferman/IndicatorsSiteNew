@@ -7,10 +7,12 @@ import pandas as pd
 from pymongo import MongoClient
 import psycopg2
 
-client = MongoClient()
-client = MongoClient('localhost', 27017)
 
-mydatabase = client['SRC']
+uri = "mongodb://jbeiferm:Mongodb1234@d1fm1mon129.amr.corp.intel.com:7955,d2fm1mon129.amr.corp.intel.com:7955,d3fm1mon129.amr.corp.intel.com:7955/ISV_SRC?ssl=true&replicaSet=mongo7955"
+client = MongoClient()
+client = MongoClient(uri)
+
+mydatabase = client['ISV_SRC']
 mycollection = mydatabase['Runs']
 
 
@@ -145,13 +147,48 @@ def extractIter(filename): #extract advanced data such as iterations
 
 file = os.path.join(directory, 'CH4HDMTISV10', '2022_06_17_16_04_12_Run','CH4HDMTISV10_2022_06_17_16_04_12.xlsx')
 
+def parseOne(directory, filename, run, datasheet):
+    wbDir = os.path.join(directory, filename, run, datasheet)
+    try:
+        
+        date = run[0:10].replace("_",'/')
+        ww = float(read_excel(wbDir, "A", 1).replace("Work Week: ", ""))
+        tos = read_excel(wbDir, "A", 5).replace("TOS: ", "").replace('hdmtOS_', "").replace("_Release", "").replace("_", " ").replace("BUILD", "Build ")
+        suite = read_excel(wbDir, "A", 6).replace("SRC looping Suite: ", "")
+        
+        tos = tos.split(" ", 1)
+
+        runToData = {
+            'ObjectId': "string",
+            'name': filename,
+            'ww': ww,
+            'tos': 
+                {
+                    'version': tos[0],
+                    'build': tos[1]
+                },
+            'suite': suite,
+            'iteration': extractIter(wbDir),
+            'comments': "",
+            'datagrove': os.path.join(directory, filename, run),
+            'date': date,
+            'ados': []
+        }
+
+        mycollection.insert_one(runToData)
+        numFiles += 1
+        
+
+    except FileNotFoundError:
+        pass
+
 
 
 def parseFiles():
     global numFiles
 
     for filename in os.listdir(directory):
-        if filename.startswith("CH4"): #filter out only testers that start with ch4 
+        if filename.startswith("CH4HDMTISV11"): #filter out only testers that start with ch4 
             for run in os.listdir(os.path.join(directory, filename)):
                 if run.endswith("_Run") and not run.startswith("2022_04_16_02") and run.startswith("2022"):
                     for datasheet in os.listdir(os.path.join(directory, filename, run)):
@@ -182,6 +219,8 @@ def parseFiles():
                                     'ados': []
                                 }
 
+                                print(runToData)
+
                                 mycollection.insert_one(runToData)
                                 numFiles += 1
                                 
@@ -194,5 +233,4 @@ def parseFiles():
     print(numFiles)
     print("done uploading")
 
-parseFiles()
-
+parseOne(directory, 'CH4HDMTISV10', '2022_06_17_16_04_12_Run','CH4HDMTISV10_2022_06_17_16_04_12.xlsx')
