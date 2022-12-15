@@ -13,10 +13,12 @@ import pprint
 
 warnings.filterwarnings('ignore')
 
-client = MongoClient()
-client = MongoClient('localhost', 27017)
+uri = "mongodb://jbeiferm:Mongodb1234@d1fm1mon129.amr.corp.intel.com:7955,d2fm1mon129.amr.corp.intel.com:7955,d3fm1mon129.amr.corp.intel.com:7955/ISV_SRC?ssl=true&replicaSet=mongo7955"
 
-mydatabase = client['SRC']
+#client = MongoClient()
+client = MongoClient(uri)
+
+mydatabase = client['ISV_SRC']
 mycollection = mydatabase['VerboseRuns']
 moduleCollection = mydatabase['Modules']
 
@@ -75,6 +77,7 @@ def findFails(filename, key, header):
 
             if(i+1 < len(run_index)):
                 while j < run_index[i+1]+1:
+                    
                     errMsg = read_excel(filename, "A", j)
 
                     if str(errMsg).endswith('ran successfully.') | str(errMsg).startswith('No'):
@@ -101,9 +104,6 @@ def findFails(filename, key, header):
 
                     
                     j+=1
-
-                    
-                            
 
         err.update({
             subModule: {
@@ -179,8 +179,8 @@ def getModuleData(id, filename, run, iterations, errs):
             'module_name': mod,
             'src_run': ObjectId(id),
             'tester_metadata': '',
-            'start_time': datetime,
-            'end_time':  datetime,
+            'start_time': '',
+            'end_time':  '',
             'datagrove': srcDir,        
             'exeucting order': 1,
             'test_data': module_data,
@@ -221,6 +221,7 @@ def parseOne(filename, run, datasheet): #similar function to parse only one file
         iterations, errs = extractIter(wbDir)
 
         runToData = {
+            '_id': ObjectId("ch4"),
             'name': filename,
             'ww': ww,
             'tos': {
@@ -249,16 +250,18 @@ def parseOne(filename, run, datasheet): #similar function to parse only one file
 
         }
 
+        
+
         _id = mycollection.insert_one(runToData)
 
         #get object id to link
         objId = _id.inserted_id
         modules_ids = getModuleData(objId, filename, run, iterations, errs)
-        
-
     except IndexError:
+        print("Index Error")
         pass
     except FileNotFoundError:
+        print("File Not found")
         pass    
         
 
@@ -266,12 +269,7 @@ def parseOne(filename, run, datasheet): #similar function to parse only one file
 
     #print(f"Uploaded to Mongodb. Elapsed Time: {end-start}s")
 
-
-#parseOne('CH4HDMTISV02', '2022_07_22_13_25_15_Run','CH4HDMTISV02_2022_07_22_13_25_15.xlsx')
-#\\datagroveaz.amr.corp.intel.com\sttd\HDMT\TesterIntegration\HISV\SRCLoopingData\CH4HDMTISV02\2022_07_22_13_25_15_Run
-
-parseOne('CH4HBI10004', '2022_02_14_11_13_59_Run', 'CH4HBI10004_2022_02_14_11_13_59.xlsx')
-
+parseOne('CH4HBI10007', '2021_10_27_09_36_29_Run', 'CH4HBI10007_2021_10_27_09_36_29.xlsx')
 
 def parseAll():
     start = time.time()

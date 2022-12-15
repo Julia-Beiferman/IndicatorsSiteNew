@@ -176,25 +176,38 @@
                         <td><%= module[i].module_data[j].data.runtime %></td>
                         <% if(module[i].module_data[j].data.errors !== null && module[i].module_data[j].data.errors.length > 1) { %>
                           <td>
-                          <table class="table table-light table-striped">
+                          <table class="table table-light table-striped table-bordered">
                             <thead>
                               <tr>
-                                <% for(var k = 0; k < module[i].module_data[j].data.errors[0].length; k++) { %>
-                                  <% if(module[i].module_data[j].data.errors[0][k] !== "nan") { %>
-                                  <td><%= module[i].module_data[j].data.errors[0][k] %></td>
+                                <% if(Array.isArray(module[i].module_data[j].data.errors[0])) { %>
+                                  <% for(var k = 0; k < module[i].module_data[j].data.errors[0].length; k++) { %>
+                                    <% if(module[i].module_data[j].data.errors[0][k] !== "nan") { %>
+                                    <td><%= module[i].module_data[j].data.errors[0][k] %></td>
+                                    <% } %>
                                   <% } %>
+                                <% } else { %>
+                                  <td>
+                                  <% for(var k = 0; k < module[i].module_data[j].data.errors.length; k++) { %>
+                                    <% if(module[i].module_data[j].data.errors[k] !== "nan") { %>
+                                      <%= module[i].module_data[j].data.errors[k] %> <br>
+                                    <% } %>
+                                  <% } %>
+                                  </td>
                                 <% } %>
+
                               </tr>
                             </thead>
                             <tbody>
-                              <% for(var k = 1; k < module[i].module_data[j].data.errors.length; k++) { %>
-                                <tr>
-                                <% for(var h=0; h < module[i].module_data[j].data.errors[k].length; h++){ %>
-                                  <% if(module[i].module_data[j].data.errors[k][h] !== "nan") { %>
-                                  <td><%= module[i].module_data[j].data.errors[k][h] %></td>
+                              <% if(Array.isArray(module[i].module_data[j].data.errors[0])) { %>
+                                <% for(var k = 1; k < module[i].module_data[j].data.errors.length; k++) { %>
+                                  <tr>
+                                  <% for(var h=0; h < module[i].module_data[j].data.errors[k].length; h++){ %>
+                                    <% if(module[i].module_data[j].data.errors[k][h] !== "nan") { %>
+                                    <td><%= module[i].module_data[j].data.errors[k][h] %></td>
+                                    <% } %>
                                   <% } %>
+                                  </tr>
                                 <% } %>
-                                </tr>
                               <% } %>
                             </tbody>
                           </table>

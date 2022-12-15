@@ -76,6 +76,7 @@
                     <th id="failRe_col_head" scope="col">Fail Report</th>
                     <th id="comment_col_head" scope="col">Comments</th>
                     <th id="ado_col_head" style="display:none;" scope="col">ADO</th>
+                    <th id="err_col_head" style="display:none;" scope="col"></th>
                     </tr>
                 </tr>
               </thead>
@@ -156,13 +157,28 @@
                         </svg>
                       </button>
                     </td>
+                    
 
-                    <td style="display:none;" class="ado_col">
-                      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adoModal" data-bs-whatever="@mdo">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                        </svg>
-                      </button>
+                  
+                      <td style="display:none;" id="edit_ado" class="ado_col">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adoModal" 
+                        data-bs-whatever=<%= dat._id %>
+                        name=<%= dat.name %>
+                        datagrove=<%= dat.datagrove %>
+                        tos= "<%= dat.tos.version + " Build" + dat.tos.build %>"
+                        suite="<%= dat.suite %>"
+                        summary=<%= JSON.stringify(dat.summary)%>
+                        date= "<%= dat.date %>">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                          </svg>
+                        </button>
+                      </td>
+
+                  
+
+                    <td style="display:none;">
+                      all errors go here
                     </td>
                     
                   
@@ -189,88 +205,6 @@
     .then((json) => console.log(json));
 </script>
 
-<script>
-  var request = new XMLHttpRequest()
-
-  request.open('GET', 'https://dev.azure.com/ATTD/HDMT_Prod/_apis/wit/workitems/187976?api-version=6.0', true)
-  request.setRequestHeader('Content-Type', 'application/json; charset=utf-8;');
-  request.setRequestHeader ("Authorization", "Basic " + btoa('Basic' + ":" + 'vl6itwdrmbiotwrjcttijtmnc7yskjr4q6q2pmtyzj3h7mo25xpq'));
-
-  request.onload = function() {
-    // Begin accessing JSON data here
-
-    //var data = JSON.parse(this.response)
-
-    if (request.status >= 200 && request.status < 400) {
-      //console.log(data.fields)
-    } else {
-      //console.log('error')
-    }
-  }
-
-  request.send()
-</script>
-
-
-  <script type="text/javascript">
-    const exampleModal = document.getElementById('editRowModal')
-    exampleModal.addEventListener('show.bs.modal', event => {
-      // Button that triggered the modal
-      const button = event.relatedTarget
-      // Extract info from data-bs-* attributes
-      const recipient = button.getAttribute('data-bs-whatever')
-
-      //fill in data
-      const params = ['name', 'ww', 'tos', 'suite', 'comment', 'ado'];
-
-      for(var i = 0; i < params.length; i++){
-        querySel = "#" + params[i] + "form";
-
-        exampleModal.querySelector(querySel).value = button.getAttribute(params[i]);
-      }
-
-      console.log('ID')
-      console.log(recipient)
-      console.log('comments')
-      console.log(button.getAttribute('comment'))
-
-      summarys = button.getAttribute('summary');
-      
-
-      iterDict = JSON.parse(summarys);
-      for(const [key, value] of Object.entries(iterDict)){
-        if(value.length > 0){
-          var iter_id = "#" + key.substring(0,3) + "_form";
-          var iter_id_two = "#" + key.substring(0,3) + "_form2";
-          exampleModal.querySelector(iter_id).value = value[0];
-          exampleModal.querySelector(iter_id_two).value = value[1];
-        }
-      }
-
-      exampleModal.querySelector("#custId").value = recipient; //hidden input to return row id
-      const modalTitle = exampleModal.querySelector('.modal-title')
-      modalTitle.textContent = `Edit Test Run id: ${recipient}`
-      //nameInput.value = name
-    })
-
-    const addcommentModal = document.getElementById('commentModal')
-    addcommentModal.addEventListener('show.bs.modal', event => {
-      // Button that triggered the modal
-      const button = event.relatedTarget
-      // Extract info from data-bs-* attributes
-      const id = button.getAttribute('data-bs-whatever')
-
-      const comments = button.getAttribute('comment');
-      console.log( button.getAttribute('comment'))
-      
-
-      addcommentModal.querySelector("#custId").value = id; //hidden input to return row id
-      addcommentModal.querySelector('#commentform').value = comments //add existing comments to page into the textarea 
-      const modalTitle = addcommentModal.querySelector('.modal-title')
-      modalTitle.textContent = `Add comment Run id: ${id}`
-    })
-
-  </script>
 
   <script>
     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) { //work week search in range

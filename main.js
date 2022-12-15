@@ -5,12 +5,13 @@ const Module = require('./models/Module');
 var bodyParser = require('body-parser');
 const fetch = require('node-fetch');
 var HttpsProxyAgent = require('https-proxy-agent');
+const { DefinitionQueryOrder } = require('azure-devops-node-api/interfaces/BuildInterfaces');
 
 const app = express();
 
 //connect to mongodb
-const dbURL = 'mongodb://localhost:27017/SRC';
-mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true})
+const dbURL = "mongodb://jbeiferm:Mongodb1234@d1fm1mon129.amr.corp.intel.com:7955,d2fm1mon129.amr.corp.intel.com:7955,d3fm1mon129.amr.corp.intel.com:7955/ISV_SRC?ssl=true&replicaSet=mongo7955";
+mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true, tlsInsecure: true})
     .then((result) => app.listen(8081))
     .catch((err) => console.log(err));
 
@@ -48,6 +49,71 @@ app.get('/runs', function(req, res){
          res.render('runReports', {data: result, tosDist: tosDist, suiteDist: suiteDist})))
    ); 
  })
+
+
+ 
+async function postData(date, datagrove, name) {
+   const url = 'https://dev.azure.com/ATTD/HDMT_Prod/_apis/wit/wiql?api-version=6.0';
+   let data = `{"query": "Select [System.Id], [System.Title], [System.State] From WorkItems 
+   Where [System.WorkItemType] <> '' 
+   AND [System.Description] Contains '` + datagrove + `'
+   OR [System.Description] Contains '` +  name + `'
+   "}`
+   const response = await fetch(url, {
+      agent: new HttpsProxyAgent('http://proxy-us.intel.com:911'),
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+         "Authorization": "Basic " + "NWg2bW1qc2VzeDZ3ZmFsd2lhZ2ZsNnZlc3lwdGJwNGE0Z3U2ZzduZzcyb2lhdTU2YzZ2YQ===",
+         "Content-Type": "application/json"
+      },
+      body: data // body data type must match "Content-Type" header
+   });
+   return response.json(); // parses JSON response into native JavaScript objects
+}
+
+async function getData(ids) {
+   const url = 'https://dev.azure.com/ATTD/HDMT_Prod/_apis/wit/workitemsbatch?api-version=6.0';
+   let data = `{
+      "ids": [` + ids + `],
+      fields: ["System.Id", "System.Title", "TOS.Type", "TOS.Found_In_Release"]
+   }`
+
+   const response = await fetch(url, {
+      agent: new HttpsProxyAgent('http://proxy-us.intel.com:911'),
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+         "Authorization": "Basic " + "NWg2bW1qc2VzeDZ3ZmFsd2lhZ2ZsNnZlc3lwdGJwNGE0Z3U2ZzduZzcyb2lhdTU2YzZ2YQ===",
+         "Content-Type": "application/json"
+      },
+      body: data // body data type must match "Content-Type" header
+   });
+   return response.json(); // parses JSON response into native JavaScript objects
+}
+
+
+//ado linkage 
+app.post('/runs/ado', function(req, res){
+   
+   console.log("ADO POST METHOD")
+   var name =  req.body.name;
+   var datagrove = req.body.datagrove;
+   var date = req.body.date;
+   var fails = req.body.fails;
+   
+
+   postData(date, datagrove, name)
+   .then((data) => {
+     let ids = []
+     data.workItems.forEach(item => {
+       ids.push(item.id)
+     })
+     getData(ids)
+       .then((out) => {
+         console.log(out.value)
+       })
+     
+   });
+})
 
 
  // look up ados based off run information...
@@ -98,6 +164,8 @@ app.get('/runs/:id', function(req, res){
 
  app.post('/runs/addcomment', jsonParser, function(req, res){
 
+   console.log('ADD COMMENT POST METHOD')
+
    var addComment = {
       $set: {
          comments:   req.body.comment
@@ -135,7 +203,7 @@ app.post('/runs/deleteRun', jsonParser, function(req, res){
 })
 
 
- app.get('/summary/:version', function(req, res){
+ app.get('/summary/:version', function(req, res){ // WE NEED TO FIX THE SUMMARY PAGE 
    var sumList = [];
    const hbi = ['CH4HBI10004', 'CH4HBI10007', 'CH4HBI10017', 'CH4HBI10027', 'CH4HBI10107'];
    const gen2 = ['CH4HDMTISV01', 'CH4HDMTISV02', 'CH4HDMTISV05'];
@@ -167,6 +235,8 @@ app.post('/runs/deleteRun', jsonParser, function(req, res){
       const result = await Run.find(query).sort({'ww': -1}).collation({locale: 'en_US', numericOrdering: true})
       return result[0]
    }
+
+   //FIND THE LATEST DATA FOR EACH TESTER NAME
    
    
    const mapLoop = async _ => {    
@@ -207,6 +277,7 @@ let ejsOptions = {
    async: true
 }
 
+/
 async function postData(datagrove) {
    const url = 'https://dev.azure.com/ATTD/HDMT_Prod/_apis/wit/wiql?api-version=6.0';
    let data = `{"query": "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] <> '' AND [System.Description] Contains '` + datagrove + `'"}`
@@ -241,18 +312,17 @@ async function postData(datagrove) {
    return response.json(); // parses JSON response into native JavaScript objects
  };
 
-
 app.get('/errata', function(req, res){
 
    postData()
    .then((data) => {
+      console.log(data)
       let ids = []
       data.workItems.forEach(item => {
          ids.push(item.id)
       })
       getData(ids)
          .then((tickets) => {
-            console.log(tickets)
             Run.find().distinct('tos.formatted')
             .then((tosDist) => res.render('errata', {tosDist: tosDist, tickets: tickets.value}))
             .catch((err) => console.log(err)); 
