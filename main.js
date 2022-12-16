@@ -12,15 +12,17 @@ const app = express();
 //connect to mongodb
 const dbURL = "mongodb://jbeiferm:Mongodb1234@d1fm1mon129.amr.corp.intel.com:7955,d2fm1mon129.amr.corp.intel.com:7955,d3fm1mon129.amr.corp.intel.com:7955/ISV_SRC?ssl=true&replicaSet=mongo7955";
 mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true, tlsInsecure: true})
-    .then((result) => app.listen(8081))
+    .then((result) => app.listen(8080)
     .catch((err) => console.log(err));
 
 app.set('view engine', 'ejs');
-console.log('Running on 127.0.0.1:8081');
 
 //middleware
-app.use(express.static('public'));
-app.use(express.static("views"));
+// app.use(express.static('public'));
+app.use( express.static( __dirname + '/public'))
+
+// app.use(express.static("views"));
+app.set( 'views', __dirname + '/views')
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
