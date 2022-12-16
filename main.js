@@ -12,7 +12,7 @@ const app = express();
 //connect to mongodb
 const dbURL = "mongodb://jbeiferm:Mongodb1234@d1fm1mon129.amr.corp.intel.com:7955,d2fm1mon129.amr.corp.intel.com:7955,d3fm1mon129.amr.corp.intel.com:7955/ISV_SRC?ssl=true&replicaSet=mongo7955";
 mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true, tlsInsecure: true})
-    .then((result) => app.listen(8080)
+    .then((result) => app.listen(8080))
     .catch((err) => console.log(err));
 
 app.set('view engine', 'ejs');
