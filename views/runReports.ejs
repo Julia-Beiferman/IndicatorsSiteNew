@@ -205,6 +205,67 @@
     .then((json) => console.log(json));
 </script>
 
+<script type="text/javascript">
+  const exampleModal = document.getElementById('editRowModal')
+  exampleModal.addEventListener('show.bs.modal', event => {
+    // Button that triggered the modal
+    const button = event.relatedTarget
+    // Extract info from data-bs-* attributes
+    const recipient = button.getAttribute('data-bs-whatever')
+
+    //fill in data
+    const params = ['name', 'ww', 'tos', 'suite', 'comment', 'ado'];
+
+    for(var i = 0; i < params.length; i++){
+      querySel = "#" + params[i] + "form";
+
+      exampleModal.querySelector(querySel).value = button.getAttribute(params[i]);
+    }
+
+    console.log('ID')
+    console.log(recipient)
+    console.log('comments')
+    console.log(button.getAttribute('comment'))
+
+    summarys = button.getAttribute('summary');
+    
+
+    iterDict = JSON.parse(summarys);
+    for(const [key, value] of Object.entries(iterDict)){
+      if(value.length > 0){
+        var iter_id = "#" + key.substring(0,3) + "_form";
+        var iter_id_two = "#" + key.substring(0,3) + "_form2";
+        exampleModal.querySelector(iter_id).value = value[0];
+        exampleModal.querySelector(iter_id_two).value = value[1];
+      }
+    }
+
+    exampleModal.querySelector("#custId").value = recipient; //hidden input to return row id
+    const modalTitle = exampleModal.querySelector('.modal-title')
+    modalTitle.textContent = `Edit Test Run id: ${recipient}`
+    //nameInput.value = name
+  })
+
+  const addcommentModal = document.getElementById('commentModal')
+  addcommentModal.addEventListener('show.bs.modal', event => {
+    // Button that triggered the modal
+    const button = event.relatedTarget
+    // Extract info from data-bs-* attributes
+    const id = button.getAttribute('data-bs-whatever')
+
+    const comments = button.getAttribute('comment');
+    console.log( button.getAttribute('comment'))
+    
+
+    addcommentModal.querySelector("#custId").value = id; //hidden input to return row id
+    addcommentModal.querySelector('#commentform').value = comments //add existing comments to page into the textarea 
+    const modalTitle = addcommentModal.querySelector('.modal-title')
+    modalTitle.textContent = `Add comment Run id: ${id}`
+  })
+
+</script>
+
+
 
   <script>
     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) { //work week search in range
