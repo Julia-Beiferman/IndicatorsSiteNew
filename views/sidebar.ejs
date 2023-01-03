@@ -53,7 +53,6 @@
     
     <h4 style="text-align: center">Filters</h4>
     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-        <li><h5 href="#">Indicators</h5></li>
 
         <script> 
           
@@ -77,11 +76,12 @@
         <li class="mb-1">
           <div class="form-check">
             <input class="form-check-input" type="checkbox"value="hide" id="name_col" onchange="toggleCheck(this.id);" checked>
-            <button style="color:white" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#name-collapse" aria-expanded="true">
+            <span class="form-check-label" for="flexCheckChecked" style="color:white">
+              Tester
+            </span>
+            <button style="color:white;" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#name-collapse" aria-expanded="true">
 
-              <span class="form-check-label" for="flexCheckChecked" style="color:white">
-                Tester
-              </span>
+
             </button>
             </div>
           
@@ -107,27 +107,33 @@
         <li class="mb-1">
             <div class="form-check">
               <input class="form-check-input" type="checkbox"value="hide" id="ww_col" onchange="toggleCheck(this.id);" checked>
-              <label class="form-check-label" for="flexCheckChecked" style="color:white">
-                Work Week
-              </label>
+              
+                <span class="form-check-label" for="flexCheckChecked" style="color:white">Work Week
+                </span>
+                <button style="color:white" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#ww-collapse" aria-expanded="true"></button>
             </div>
-            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-              <div class="input-group mb-3">
-                <input type="text" name="min" id="min" class="form-control" placeholder="From" aria-label="ww_start">
-                <span class="input-group-text">to</span>
-                <input type="text" name="max" id="max" class="form-control" placeholder="End" aria-label="ww_end">
-              </div>
-            </ul>
+            <div class="collapse" id="ww-collapse">
+              
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <div class="input-group mb-3">
+                  <input type="text" name="min" id="min" class="form-control" placeholder="From" aria-label="ww_start">
+                  <span class="input-group-text">to</span>
+                  <input type="text" name="max" id="max" class="form-control" placeholder="End" aria-label="ww_end">
+                </div>
+              </ul>
+            </div>
+
         </li>
 
         <li class="mb-1">
           <div class="form-check">
             <input class="form-check-input" type="checkbox"value="hide" id="tos_col" onchange="toggleCheck(this.id);" checked>
-            <button style="color:white" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#tos-collapse" aria-expanded="true">
+            
 
               <span class="form-check-label" for="flexCheckChecked" style="color:white">
                 TOS Version
               </span>
+              <button style="color:white" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#tos-collapse" aria-expanded="true">
             </button>
             </div>
           <div class="collapse" id="tos-collapse">
@@ -150,11 +156,12 @@
           <div class="form-check">
               
               <input class="form-check-input" type="checkbox"value="hide" id="src_col" onchange="toggleCheck(this.id);" checked>
-              <button style="color:white" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#src-collapse" aria-expanded="true">
+              
 
                 <span class="form-check-label" for="flexCheckChecked" style="color:white">
                   SRC Suite
                 </span>
+                <button style="color:white" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#src-collapse" aria-expanded="true"></button>
             </button>
           </div>
           
@@ -178,10 +185,11 @@
           <div class="form-check">
             <input class="form-check-input" type="checkbox"value="hide" id="itr_col" onchange="toggleCheck(this.id);" checked>
           
-            <button style="display:inline-block" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+            
                 <span class="form-check-label" for="flexCheckChecked" style="color:white">
                   Iterations
                 </span>
+            <button style="display:inline-block" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
             </button>
           </div>
           <div class="collapse" id="home-collapse">
@@ -211,8 +219,6 @@
             </div>
 
         </li>
-
-        <li><h5 href="#">Fail Report</h5></li>
 
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="hide" id="comment_col" checked onchange="toggleCheck(this.id);">
